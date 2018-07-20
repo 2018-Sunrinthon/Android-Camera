@@ -27,6 +27,17 @@ class CameraFragment() : Fragment() {
         super.onActivityCreated(savedInstanceState)
         requestPermission()
         startCamera()
+
+        closeBtn.setOnClickListener {
+
+        }
+        flashBtn.setOnClickListener {
+            cameraView.changeFlash()
+        }
+
+        cameraView.setOnClickListener {
+            (it as CameraView).setFocus { b, camera ->  }
+        }
     }
 
     private fun startCamera() {

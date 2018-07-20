@@ -37,6 +37,15 @@ class CameraView : SurfaceView, SurfaceHolder.Callback {
         mCamera = null
     }
 
+    fun changeFlash() {
+        mCamera?.run {
+            parameters = mCamera?.parameters?.apply {
+                flashMode = if (flashMode == Camera.Parameters.FLASH_MODE_TORCH) Camera.Parameters.FLASH_MODE_OFF else Camera.Parameters.FLASH_MODE_TORCH
+            }
+            startPreview()
+        }
+    }
+
     override fun surfaceCreated(surfaceHolder: SurfaceHolder?) {
         if (mCamera == null)
             mCamera = Camera.open()
@@ -44,17 +53,16 @@ class CameraView : SurfaceView, SurfaceHolder.Callback {
             parameters = mCamera!!.parameters.apply {
                 set("orientation", "portrait")
                 setRotation(90)
+                val sizes = supportedPreviewSizes
+                getOptimumSize().let {
+                    setPictureSize(it.width, it.height)
+                }
+//            params.flashMode = Camera.Parameters.FLASH_MODE_TORCH;
+                setPreviewSize(sizes.first().width, sizes.first().height)
             }
             setDisplayOrientation(90)
             setPreviewDisplay(surfaceHolder)
             startPreview()
-            val params = parameters
-            val sizes = params.supportedPreviewSizes
-            getOptimumSize().let {
-                params.setPictureSize(it.width, it.height)
-            }
-            params.setPreviewSize(sizes.first().width, sizes.first().height)
-            parameters = params
         }
     }
 
@@ -134,7 +142,7 @@ class CameraView : SurfaceView, SurfaceHolder.Callback {
     fun saveImage() {
         getPicture { img ->
             val bmp = BitmapFactory.decodeByteArray(img, 0, img.size)
-            var folder = Environment.getExternalStorageDirectory().absolutePath + "/myCamera/img/"
+            var folder = Environment.getExternalStorageDirectory().absolutePath + "/ddaal/"
             val filename = "img${SimpleDateFormat("yyyyMMddhhmmss").format(Date())}.jpg"
             Log.e("asdf", filename)
             var folderPath = File(folder)
